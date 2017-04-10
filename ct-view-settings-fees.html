@@ -1,4 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../ct-currency-behaviour/ct-currency-behaviour.html">
 
 <!--
 `ct-view-settings-fees`
@@ -8,27 +11,247 @@ Element to view fees in settings on the Centular platform
 -->
 
 <dom-module id="ct-view-settings-fees">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
   <template>
+
     <style>
       :host {
         display: block;
       }
+
+      .fees-container .row {
+        display: flex;
+        align-items: center;
+      }
+
     </style>
-    <h2>Hello [[prop1]]</h2>
+
+    <div class="container-fluid fees-container">
+
+      <div class="row">
+        <div class="col-sm-2 col-sm-offset-10">
+          <paper-button class$="btn btn-block [[_computeBtnStyle(_isStatusEdit)]]" on-tap="_editBtnHandler">[[_computeButtonText(_isStatusEdit)]]</paper-button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div><strong>Admin Fees (inc VAT)</strong></div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[formatMoney(_dataObj.adminFees.currencyValue)]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div prefix>R </div>
+          </paper-input>
+        </div>
+        <div class="col-sm-1">
+          <div class="text-center">+</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[_dataObj.adminFees.percentageValue]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div suffix>%</div>
+          </paper-input>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div><strong>Merchant Fees (inc VAT)</strong></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div>Speedpay</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[formatMoney(_dataObj.speedPay.currencyValue)]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div prefix>R </div>
+          </paper-input>
+        </div>
+        <div class="col-sm-1">
+          <div class="text-center">+</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[_dataObj.speedPay.percentageValue]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div suffix>%</div>
+          </paper-input>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div>Credit Card</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[formatMoney(_dataObj.creditCard.currencyValue)]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div prefix>R </div>
+          </paper-input>
+        </div>
+        <div class="col-sm-1">
+          <div class="text-center">+</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[_dataObj.creditCard.percentageValue]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div suffix>%</div>
+          </paper-input>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div>EFT</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[formatMoney(_dataObj.eft.currencyValue)]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div prefix>R </div>
+          </paper-input>
+        </div>
+        <div class="col-sm-1">
+          <div class="text-center">+</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[_dataObj.eft.percentageValue]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div suffix>%</div>
+          </paper-input>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div>PayFast</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[formatMoney(_dataObj.payFast.currencyValue)]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div prefix>R </div>
+          </paper-input>
+        </div>
+        <div class="col-sm-1">
+          <div class="text-center">+</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[_dataObj.payFast.percentageValue]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div suffix>%</div>
+          </paper-input>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div>Self Vend</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[formatMoney(_dataObj.selfVend.currencyValue)]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div prefix>R </div>
+          </paper-input>
+        </div>
+        <div class="col-sm-1">
+          <div class="text-center">+</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[_dataObj.selfVend.percentageValue]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div suffix>%</div>
+          </paper-input>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div>Free Issue</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[formatMoney(_dataObj.freeIssue.currencyValue)]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div prefix>R </div>
+          </paper-input>
+        </div>
+        <div class="col-sm-1">
+          <div class="text-center">+</div>
+        </div>
+        <div class="col-sm-3">
+          <paper-input type="text" allowed-pattern="[0-9\.]" no-label value="[[_dataObj.freeIssue.percentageValue]]" readonly$="[[_computeReadOnly(_isStatusEdit)]]">
+            <div suffix>%</div>
+          </paper-input>
+        </div>
+      </div>
+    </div>
+
   </template>
 
   <script>
-    Polymer({
+      Polymer({
 
-      is: 'ct-view-settings-fees',
+          is: 'ct-view-settings-fees',
+          behaviors: [CurrencyBehaviours.CurrencyFormatBehaviour],
 
-      properties: {
-        prop1: {
-          type: String,
-          value: 'ct-view-settings-fees',
-        },
-      },
+          properties: {
+              _isStatusEdit : {
+                  type: Boolean,
+                  value: function() {
+                      return false;
+                  }
+              },
 
-    });
+              _dataObj: {
+                  type: Object,
+                  value: function() {
+                      return {
+                          adminFees: {
+                              currencyValue: 10,
+                              percentageValue: 20
+                          },
+                          speedPay: {
+                              currencyValue: 10,
+                              percentageValue: 20
+                          },
+                          creditCard: {
+                              currencyValue: 10,
+                              percentageValue: 20
+                          },
+                          eft: {
+                              currencyValue: 10,
+                              percentageValue: 20
+                          },
+                          payFast: {
+                              currencyValue: 10,
+                              percentageValue: 20
+                          },
+                          selfVend: {
+                              currencyValue: 10,
+                              percentageValue: 20
+                          },
+                          freeIssue: {
+                              currencyValue: 10,
+                              percentageValue: 20
+                          },
+
+                      }
+                  }
+              }
+          },
+
+          _computeReadOnly : function(status){
+              return (!status);
+          },
+
+          _computeButtonText: function(isEdit){
+              return (isEdit) ? 'Save Fees' : 'Edit Fees';
+          },
+
+          _computeBtnStyle : function(isEdit){
+              return (isEdit) ? "btn-primary" : "btn-default";
+          },
+
+          _toggleStatus : function(){
+              this._isStatusEdit = !this._isStatusEdit;
+          },
+
+          _editBtnHandler : function(){
+//            todo: event fired on edit/save
+//            todo: event to emit notification
+
+              this._toggleStatus();
+          },
+
+      });
   </script>
 </dom-module>
