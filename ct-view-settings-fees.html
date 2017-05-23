@@ -283,7 +283,6 @@ Element to view fees in settings on the Centular platform
         </div>
         <div class="col-sm-3">
           <ct-editable-switcher edit-mode$="[[_isStateEdit]]">
-            <div class="vertical-middle-container">
               <paper-input
                     class="input-element"
                     type="text"
@@ -292,7 +291,6 @@ Element to view fees in settings on the Centular platform
                     value="[[formatMoney(_dataObj.freeIssue.currencyValue)]]">
               <div prefix>R </div>
             </paper-input>
-              </div>
           </ct-editable-switcher>
         </div>
         <div class="col-sm-1">
@@ -300,7 +298,6 @@ Element to view fees in settings on the Centular platform
         </div>
         <div class="col-sm-3">
           <ct-editable-switcher edit-mode$="[[_isStateEdit]]" class="text-right">
-            <div class="vertical-middle-container">
               <paper-input
                       class="input-element"
                       type="text"
@@ -309,7 +306,6 @@ Element to view fees in settings on the Centular platform
                       value="[[_dataObj.freeIssue.percentageValue]]">
                 <div suffix>%</div>
               </paper-input>
-          </div>
           </ct-editable-switcher>
         </div>
       </div>
