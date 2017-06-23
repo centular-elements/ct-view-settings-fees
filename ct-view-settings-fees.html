@@ -1,6 +1,10 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
+
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
 
 <link rel="import" href="../ct-currency-behaviour/ct-currency-behaviour.html">
 <link rel="import" href="../ct-editable-switcher/ct-editable-switcher.html">
@@ -68,7 +72,7 @@ Element to view fees in settings on the Centular platform
         </div>
 
       </div>
-      <div class="row">
+      <form class="row" is="iron-form" method="PUT">
         <div class="col-xs-12 col-sm-12 col-md-9">
 
 
@@ -310,7 +314,8 @@ Element to view fees in settings on the Centular platform
         </div>
       </div>
     </div>
-  </div>
+
+  </form>
     </div>
 
   </template>
@@ -322,6 +327,7 @@ Element to view fees in settings on the Centular platform
           behaviors: [CurrencyBehaviours.CurrencyFormatBehaviour],
 
           properties: {
+              feesData : Object,
               _isStateEdit : {
                   type: Boolean,
                   value: function() {
@@ -329,42 +335,7 @@ Element to view fees in settings on the Centular platform
                   },
               },
 
-              _dataObj: {
-                  type: Object,
-                  value: function() {
-                      return {
-                          adminFees: {
-                              currencyValue: 10,
-                              percentageValue: 20
-                          },
-                          speedPay: {
-                              currencyValue: 10,
-                              percentageValue: 20
-                          },
-                          creditCard: {
-                              currencyValue: 10,
-                              percentageValue: 20
-                          },
-                          eft: {
-                              currencyValue: 10,
-                              percentageValue: 20
-                          },
-                          payFast: {
-                              currencyValue: 10,
-                              percentageValue: 20
-                          },
-                          selfVend: {
-                              currencyValue: 10,
-                              percentageValue: 20
-                          },
-                          freeIssue: {
-                              currencyValue: 10,
-                              percentageValue: 20
-                          },
 
-                      }
-                  }
-              }
           },
 
           _computeReadOnly : function(status){
@@ -384,11 +355,24 @@ Element to view fees in settings on the Centular platform
           },
 
           _editBtnHandler : function(){
-//            todo: event fired on edit/save
-//            todo: event to emit notification
-
-              this._toggleStatus();
+              var form = this.$$('form');
+              if(this._isStateEdit){
+                  if(form.validate()){
+                      form.submit();
+                  }
+              } else {
+                  this._toggleStatus();
+              }
           },
+          _formHandler : function(e){
+
+              var form = this.$$('form').serialize(),
+                  params = {};
+
+              e.preventDefault();
+
+
+          }
 
       });
   </script>
