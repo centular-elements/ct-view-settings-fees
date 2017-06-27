@@ -9,6 +9,7 @@
 <link rel="import" href="../ct-currency-behaviour/ct-currency-behaviour.html">
 <link rel="import" href="../ct-editable-switcher/ct-editable-switcher.html">
 <link rel="import" href="../shared-styles/ct-application-theme.html">
+<link rel="import" href="../ct-fee-api/ct-fee-api.html">
 
 <!--
 `ct-view-settings-fees`
@@ -72,7 +73,54 @@ Element to view fees in settings on the Centular platform
         </div>
 
       </div>
-      <form class="row" is="iron-form" method="PUT">
+
+
+      <div class="row">
+        <div class="col-xs-12">
+
+
+        <template is="dom-repeat" items="{{_feeOptionList}}">
+          <form
+                    is="iron-form"
+                    class="row"
+                    id="[[_computeId('editForm',index)]]"
+                    disable-native-validation-ui
+                    method="PUT"
+                    novalidate>
+
+            <div class="col-xs-3 col-input">
+              <div class="bordered-content">
+                <ct-editable-switcher id="[[_computeId('name',index)]]"  value-prop="[[item.name]]">
+                  <p>[[item.name]]</p>
+                </ct-editable-switcher>
+              </div>
+            </div>
+              <div class="col-xs-3 col-input">
+                <div class="bordered-content">
+                  <ct-editable-switcher id="[[_computeId('number',index)]]"  value-prop="[[item.value]]">
+                    <p>[[item.value]]</p>
+                  </ct-editable-switcher>
+                </div>
+              </div>
+              <div class="col-xs-3 col-input">
+                <div class="bordered-content">
+                  <ct-editable-switcher id="[[_computeId('address',index)]]" value-prop="[[item.category]]">
+                  <p>[[item.category]]</p>
+                </ct-editable-switcher>
+              </div>
+              </div>
+              <div class="col-xs-3 col-input text-center">
+                <div class="bordered-content">
+                  <paper-icon-button icon="create" class="table-button btn-default btn-sm" on-tap="_editHandler" raised></paper-icon-button>
+                  <paper-icon-button icon="delete"  data-item-id$="[[index]]" class="table-button btn-danger btn-sm" on-tap="_modalHandler" raised></paper-icon-button>
+                </div>
+              </div>
+            </form>
+
+        </template>
+      </div>
+    </div>
+      <!-- <form class="row" is="iron-form" method="PUT">
         <div class="col-xs-12 col-sm-12 col-md-9">
 
 
@@ -315,7 +363,7 @@ Element to view fees in settings on the Centular platform
       </div>
     </div>
 
-  </form>
+  </form> -->
     </div>
 
   </template>
@@ -370,9 +418,25 @@ Element to view fees in settings on the Centular platform
                   params = {};
 
               e.preventDefault();
+          },
+          _getList : function(){
+              this.$.feeApi.getFeeData()
+                  .then(function (request) {
+                  this._feeOptionList = request.response.results;
+                          }.bind(this))
 
+                  .catch(this.fire.bind(this, 'toast', {message: 'Failed to load fee options', type: 'danger'}))
+                  .finally(this.set.bind(this, 'refreshing', false));
+          },
 
-          }
+          _update : function () {
+            this.$.feeApi.updateFeeData()
+            .then(this.fire.bind(this, 'toast', {message: 'Successfully updated fees', type: 'success'}))
+                  .catch(this.fire.bind(this, 'toast', {message: 'Error updating fees.', type: 'danger'}))
+                  .finally(function(){
+                      this.refreshing = false;
+                  });
+          },
 
       });
   </script>
