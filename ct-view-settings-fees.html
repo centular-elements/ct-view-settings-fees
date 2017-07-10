@@ -3,13 +3,15 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-input/paper-input-behavior.html">
 
+
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
 
 <link rel="import" href="../ct-currency-behaviour/ct-currency-behaviour.html">
 <link rel="import" href="../ct-editable-switcher/ct-editable-switcher.html">
+<link rel="import" href="../ct-category-settings/ct-category-settings.html">
 <link rel="import" href="../shared-styles/ct-application-theme.html">
-<link rel="import" href="../ct-fee-api/ct-fee-api.html">
+<link rel="import" href="../ct-setting-api/ct-setting-api.html">
 
 <!--
 `ct-view-settings-fees`
@@ -77,293 +79,12 @@ Element to view fees in settings on the Centular platform
 
       <div class="row">
         <div class="col-xs-12">
-
-
-        <template is="dom-repeat" items="{{_feeOptionList}}">
-          <form
-                    is="iron-form"
-                    class="row"
-                    id="[[_computeId('editForm',index)]]"
-                    disable-native-validation-ui
-                    method="PUT"
-                    novalidate>
-
-            <div class="col-xs-3 col-input">
-              <div class="bordered-content">
-                <ct-editable-switcher id="[[_computeId('name',index)]]"  value-prop="[[item.name]]">
-                  <p>[[item.name]]</p>
-                </ct-editable-switcher>
-              </div>
-            </div>
-              <div class="col-xs-3 col-input">
-                <div class="bordered-content">
-                  <ct-editable-switcher id="[[_computeId('number',index)]]"  value-prop="[[item.value]]">
-                    <p>[[item.value]]</p>
-                  </ct-editable-switcher>
-                </div>
-              </div>
-              <div class="col-xs-3 col-input">
-                <div class="bordered-content">
-                  <ct-editable-switcher id="[[_computeId('address',index)]]" value-prop="[[item.category]]">
-                  <p>[[item.category]]</p>
-                </ct-editable-switcher>
-              </div>
-              </div>
-              <div class="col-xs-3 col-input text-center">
-                <div class="bordered-content">
-                  <paper-icon-button icon="create" class="table-button btn-default btn-sm" on-tap="_editHandler" raised></paper-icon-button>
-                  <paper-icon-button icon="delete"  data-item-id$="[[index]]" class="table-button btn-danger btn-sm" on-tap="_modalHandler" raised></paper-icon-button>
-                </div>
-              </div>
-            </form>
-
-        </template>
-      </div>
-    </div>
-      <!-- <form class="row" is="iron-form" method="PUT">
-        <div class="col-xs-12 col-sm-12 col-md-9">
-
-
-      <div class="row">
-
-        <div class="col-xs-12 col-sm-12 col-md-12">
-          <div><h4>Admin Fees (inc VAT)</h4></div>
-        </div>
-        <div class="col-sm-offset-4 col-xs-3 col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[formatMoney(_dataObj.adminFees.currencyValue)]]">
-              <div prefix>R </div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-        <div class="col-xs-1 col-sm-1 col-md-1">
-          <div class="text-center vertical-middle-container"><span class="vertical-middle">+</span></div>
-        </div>
-        <div class="col-xs-5 col-sm-3 col-md-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]" class="text-right">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[_dataObj.adminFees.percentageValue]]">
-              <div suffix>%</div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-xs-12">
-          <div><h4>Merchant Fees (inc VAT)</h4></div>
-        </div>
-      </div>
-
-      <div class="row row-striped">
-        <div class="col-sm-4">
-          <div class="vertical-middle-container"><span class="vertical-middle">Speedpay</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[formatMoney(_dataObj.speedPay.currencyValue)]]">
-              <div prefix>R </div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-        <div class="col-sm-1">
-          <div class="text-center vertical-middle-container"><span class="vertical-middle">+</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]" class="text-right">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[_dataObj.speedPay.percentageValue]]">
-              <div suffix>%</div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-      </div>
-
-      <div class="row row-striped">
-        <div class="col-sm-4">
-          <div class="vertical-middle-container"><span class="vertical-middle">Credit Card</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[formatMoney(_dataObj.creditCard.currencyValue)]]">
-              <div prefix>R </div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-        <div class="col-sm-1">
-          <div class="text-center vertical-middle-container"><span class="vertical-middle">+</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]" class="text-right">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[_dataObj.creditCard.percentageValue]]">
-              <div suffix>%</div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-      </div>
-
-      <div class="row row-striped">
-        <div class="col-sm-4">
-          <div class="vertical-middle-container"><span class="vertical-middle">EFT</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[formatMoney(_dataObj.eft.currencyValue)]]">
-              <div prefix>R </div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-        <div class="col-sm-1">
-          <div class="text-center vertical-middle-container"><span class="vertical-middle">+</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]" class="text-right">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[_dataObj.eft.percentageValue]]">
-              <div suffix>%</div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-      </div>
-
-      <div class="row row-striped">
-        <div class="col-sm-4">
-          <div class="vertical-middle-container"><span class="vertical-middle">PayFast</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[formatMoney(_dataObj.payFast.currencyValue)]]">
-              <div prefix>R </div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-        <div class="col-sm-1">
-          <div class="text-center vertical-middle-container"><span class="vertical-middle">+</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]" class="text-right">
-            <paper-input
-                      class="input-element"
-                      type="text"
-                      allowed-pattern="[0-9\.]"
-                      no-label
-                      value="[[_dataObj.payFast.percentageValue]]">
-                <div suffix>%</div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-      </div>
-
-      <div class="row row-striped">
-        <div class="col-sm-4">
-          <div class="vertical-middle-container"><span class="vertical-middle">Self Vend</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[formatMoney(_dataObj.selfVend.currencyValue)]]">
-              <div prefix>R </div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-        <div class="col-sm-1">
-          <div class="text-center vertical-middle-container"><span class="vertical-middle">+</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]" class="text-right">
-            <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[_dataObj.selfVend.percentageValue]]">
-              <div suffix>%</div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-      </div>
-
-      <div class="row row-striped">
-        <div class="col-sm-4">
-          <div class="vertical-middle-container"><span class="vertical-middle">Free Issue</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]">
-              <paper-input
-                    class="input-element"
-                    type="text"
-                    allowed-pattern="[0-9\.]"
-                    no-label
-                    value="[[formatMoney(_dataObj.freeIssue.currencyValue)]]">
-              <div prefix>R </div>
-            </paper-input>
-          </ct-editable-switcher>
-        </div>
-        <div class="col-sm-1">
-          <div class="text-center vertical-middle-container"><span class="vertical-middle">+</span></div>
-        </div>
-        <div class="col-sm-3">
-          <ct-editable-switcher edit-mode$="[[_isStateEdit]]" class="text-right">
-              <paper-input
-                      class="input-element"
-                      type="text"
-                      allowed-pattern="[0-9\.]"
-                      no-label
-                      value="[[_dataObj.freeIssue.percentageValue]]">
-                <div suffix>%</div>
-              </paper-input>
-          </ct-editable-switcher>
-        </div>
+          <ct-setting-api></ct-setting-api>
+          <ct-category-settings category="admin-fees" category-display-name="Admin Fees (incl VAT)"></ct-category-settings>
+          <ct-category-settings category="merchant-fees" category-display-name="Merchant Fees (incl VAT)"></ct-category-settings>
       </div>
     </div>
 
-  </form> -->
     </div>
 
   </template>
@@ -420,7 +141,7 @@ Element to view fees in settings on the Centular platform
               e.preventDefault();
           },
           _getList : function(){
-              this.$.feeApi.getFeeData()
+              this.$.settingApi.getSettings()
                   .then(function (request) {
                   this._feeOptionList = request.response.results;
                           }.bind(this))
@@ -430,7 +151,7 @@ Element to view fees in settings on the Centular platform
           },
 
           _update : function () {
-            this.$.feeApi.updateFeeData()
+            this.$.settingApi.updateSetting()
             .then(this.fire.bind(this, 'toast', {message: 'Successfully updated fees', type: 'success'}))
                   .catch(this.fire.bind(this, 'toast', {message: 'Error updating fees.', type: 'danger'}))
                   .finally(function(){
