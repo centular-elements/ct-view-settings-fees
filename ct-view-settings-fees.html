@@ -63,30 +63,14 @@ Element to view fees in settings on the Centular platform
     </style>
 
     <div class="container-fluid fees-container">
-
-      <div class="row">
-        <div class="col-sm-2 col-sm-offset-10">
-          <paper-button
-                  class$="btn btn-block [[_computeBtnStyle(_isStateEdit)]]"
-                  on-tap="_editBtnHandler"
-                  raised>
-            [[_computeButtonText(_isStateEdit)]]
-          </paper-button>
-        </div>
-
-      </div>
-
-
       <div class="row">
         <div class="col-xs-12">
           <ct-setting-api></ct-setting-api>
           <ct-category-settings category="admin-fees" category-display-name="Admin Fees (incl VAT)"></ct-category-settings>
           <ct-category-settings category="merchant-fees" category-display-name="Merchant Fees (incl VAT)"></ct-category-settings>
+        </div>
       </div>
     </div>
-
-    </div>
-
   </template>
 
   <script>
@@ -150,7 +134,7 @@ Element to view fees in settings on the Centular platform
                   .finally(this.set.bind(this, 'refreshing', false));
           },
 
-          _update : function () {
+          _updateSetting : function () {
             this.$.settingApi.updateSetting()
             .then(this.fire.bind(this, 'toast', {message: 'Successfully updated fees', type: 'success'}))
                   .catch(this.fire.bind(this, 'toast', {message: 'Error updating fees.', type: 'danger'}))
