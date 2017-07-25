@@ -3,28 +3,26 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-input/paper-input-behavior.html">
 
-
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
 
 <link rel="import" href="../ct-currency-behaviour/ct-currency-behaviour.html">
 <link rel="import" href="../ct-editable-switcher/ct-editable-switcher.html">
-<link rel="import" href="../ct-category-settings/ct-category-settings.html">
+<link rel="import" href="../ct-setting-item/ct-setting-item.html">
 <link rel="import" href="../shared-styles/ct-application-theme.html">
+
 <link rel="import" href="../ct-setting-api/ct-setting-api.html">
 
 <!--
-`ct-view-settings-fees`
-Element to view fees in settings on the Centular platform
+`ct-category-settings`
+Component for managing category settings
 
 @demo demo/index.html
 -->
 
-<dom-module id="ct-view-settings-fees">
-
+<dom-module id="ct-category-settings">
   <template>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
     <style is="global-styles">
       :host {
         display: block;
@@ -60,14 +58,34 @@ Element to view fees in settings on the Centular platform
       paper-input-container.input-element {
         padding: 0 !important;
       }
+      .padding-bottom-20 {
+        padding-bottom:20px;
+      }
     </style>
 
+    <ct-setting-api id="settingApi"></ct-setting-api>
     <div class="container-fluid fees-container">
       <div class="row">
         <div class="col-xs-12">
-          <ct-setting-api></ct-setting-api>
-          <ct-category-settings category="admin-fees" category-display-name="Admin Fees (incl VAT)"></ct-category-settings>
-          <ct-category-settings category="merchant-fees" category-display-name="Merchant Fees (incl VAT)"></ct-category-settings>
+          <div class="row padding-bottom-20">
+            <div class="col-xs-3 col-input">
+              <div class="bordered-content ">
+                <span  disabled$="[[ !_isStateEdit ]]">[[_capataliseString(category)]]</span>
+              </div>
+            </div>
+            <div class="col-xs-9">
+              <template is="dom-repeat" items={{_settingCategoryList}}>
+                <div class="row">
+                  <div class="col-xs-6 col-input">
+                    <p>[[_capataliseString(item.key)]]</p>
+                  </div>
+                  <div class="col-xs-6 col-input">
+                    <ct-setting-item key=[[item.key]] value=[[item.value]] category=[[item.category]]></ct-setting-item>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -76,73 +94,142 @@ Element to view fees in settings on the Centular platform
   <script>
       Polymer({
 
-          is: 'ct-view-settings-fees',
+          is: 'ct-category-settings',
           behaviors: [CurrencyBehaviours.CurrencyFormatBehaviour],
 
           properties: {
-              feesData : Object,
+
+            refreshing: {
+                type: Boolean,
+                notify: true
+            },
+              settingsData : Object,
+              _settingList : {
+                type: Array,
+                notify: true
+              },
+
+              category: String,
+              key: String,
+              value: String,
               _isStateEdit : {
                   type: Boolean,
                   value: function() {
                       return false;
                   },
               },
+          },
+          listeners: {
+             'edit' : '_updateSetting'
+          },
 
-
+          _capataliseString(str) {
+            str = str.replace(/-/g, ' ');
+            return str.charAt(0).toUpperCase() + str.slice(1);
+          },
+          _computeId : function(idx){
+              return 'item-'+idx;
           },
 
           _computeReadOnly : function(status){
               return (!status);
           },
 
-          _computeButtonText: function(isEdit){
-              return (isEdit) ? 'Save Fees' : 'Edit Fees';
+          _computeButtonText: function(index){
+              var inputID = '#item-input-'+ index;
+              return (!this.$$(inputID).disabled) ? 'Save' : 'Edit';
           },
 
-          _computeBtnStyle : function(isEdit){
-              return (isEdit) ? "btn-primary" : "btn-default";
+          _computeBtnStyle : function(index){
+            console.log(index);
+            var bid = '#item-button-'+ index;
+            console.log(bid);
+            var button = this.$$(bid);
+            if(button===null) {
+              return "btn-primary";
+            }
+            else {
+              return (button.editMode) ? "btn-primary" : "btn-default";
+            }
           },
 
-          _toggleStatus : function(){
-              this._isStateEdit = !this._isStateEdit;
-          },
 
-          _editBtnHandler : function(){
-              var form = this.$$('form');
-              if(this._isStateEdit){
-                  if(form.validate()){
-                      form.submit();
+          _editBtnHandler : function(e){
+
+
+                  var inputID = '#item-input-'+ e.model.index;
+                  var value = this.$$(inputID).value;
+                  var key = e.model.item.key;
+                  var category = e.model.item.category;
+                  // switcher.editMode = !switcher.editMode;
+                  if(this.$$(inputID).disabled != true) {
+                  this.$$(inputID).disabled=true;
+                  //send the body for the update
+                  this._updateSetting({"key": key, "category" : category, "value" : value});
+
                   }
-              } else {
-                  this._toggleStatus();
-              }
-          },
-          _formHandler : function(e){
+                  else {
 
-              var form = this.$$('form').serialize(),
-                  params = {};
+                    this.$$(inputID).disabled=false;
+                  }
 
-              e.preventDefault();
-          },
-          _getList : function(){
-              this.$.settingApi.getSettings()
-                  .then(function (request) {
-                  this._feeOptionList = request.response.results;
-                          }.bind(this))
 
-                  .catch(this.fire.bind(this, 'toast', {message: 'Failed to load fee options', type: 'danger'}))
-                  .finally(this.set.bind(this, 'refreshing', false));
           },
 
-          _updateSetting : function () {
-            this.$.settingApi.updateSetting()
-            .then(this.fire.bind(this, 'toast', {message: 'Successfully updated fees', type: 'success'}))
-                  .catch(this.fire.bind(this, 'toast', {message: 'Error updating fees.', type: 'danger'}))
+          ready : function(){
+              this.init();
+          },
+
+          refresh: function() {
+              this.init();
+          },
+
+          init : function(){
+              this.refreshing = true;
+              this._getSettingsByCategory(this.category);
+              this._getSettings();
+          },
+
+          _addSetting : function (params) {
+            var body = {};
+            body.key = params.key;
+            body.value = params.value;
+            body.category = params.category;
+            this.$.settingApi.addSetting(JSON.stringify(body))
+            .then(this.fire.bind(this, 'toast', {message: 'Successfully added new Setting.', type: 'success'}))
+                  .catch(this.fire.bind(this, 'toast', {message: 'Error adding Setting.', type: 'danger'}))
                   .finally(function(){
                       this.refreshing = false;
                   });
           },
 
+          _getSettings : function() {
+              this.$.settingApi.getSettings()
+              .then(function (request) {
+              this._settingList = request.response;
+                      }.bind(this))
+                  .catch(this.fire.bind(this, 'toast', {message: 'Failed to load fees', type: 'danger'}))
+                  .finally(this.set.bind(this, 'refreshing', false));
+          },
+
+          _getSettingsByCategory : function(category) {
+              this.$.settingApi.getSettingsByCategory(category)
+                  .then(function (request) {
+                  this._settingCategoryList = request.response;
+                          }.bind(this))
+                  .catch(this.fire.bind(this, 'toast', {message: 'Failed to load option', type: 'danger'}))
+                  .finally(this.set.bind(this, 'refreshing', false));
+          },
+
+          _updateSetting : function (updateSetting) {
+            this.$.settingApi.updateSetting(updateSetting.detail)
+            /* needs a setting type to bind to in the toats eg 'Successfully updated Fees' */
+            .then(this.fire.bind(this, 'toast', {message: 'Successfully updated', type: 'success'}))
+                  .catch(this.fire.bind(this, 'toast', {message: 'Error updating.', type: 'danger'}))
+                  .finally(function(){
+                      this.refreshing = false;
+                  });
+          },
       });
   </script>
 </dom-module>
