@@ -62,7 +62,6 @@ Element to view fees in settings on the Centular platform
       }
     </style>
 
-
     <div class="container-fluid fees-container">
       <div class="row">
         <div class="col-xs-12">
@@ -79,71 +78,6 @@ Element to view fees in settings on the Centular platform
 
           is: 'ct-view-settings-fees',
           behaviors: [CurrencyBehaviours.CurrencyFormatBehaviour],
-
-          properties: {
-              feesData : Object,
-              _isStateEdit : {
-                  type: Boolean,
-                  value: function() {
-                      return false;
-                  },
-              },
-
-
-          },
-
-          _computeReadOnly : function(status){
-              return (!status);
-          },
-
-          _computeButtonText: function(isEdit){
-              return (isEdit) ? 'Save Fees' : 'Edit Fees';
-          },
-
-          _computeBtnStyle : function(isEdit){
-              return (isEdit) ? "btn-primary" : "btn-default";
-          },
-
-          _toggleStatus : function(){
-              this._isStateEdit = !this._isStateEdit;
-          },
-
-          _editBtnHandler : function(){
-              var form = this.$$('form');
-              if(this._isStateEdit){
-                  if(form.validate()){
-                      form.submit();
-                  }
-              } else {
-                  this._toggleStatus();
-              }
-          },
-          _formHandler : function(e){
-
-              var form = this.$$('form').serialize(),
-                  params = {};
-
-              e.preventDefault();
-          },
-          _getList : function(){
-              this.$.settingApi.getSettings()
-                  .then(function (request) {
-                  this._feeOptionList = request.response.results;
-                          }.bind(this))
-
-                  .catch(this.fire.bind(this, 'toast', {message: 'Failed to load fee options', type: 'danger'}))
-                  .finally(this.set.bind(this, 'refreshing', false));
-          },
-
-          _updateSetting : function () {
-            this.$.settingApi.updateSetting()
-            .then(this.fire.bind(this, 'toast', {message: 'Successfully updated fees', type: 'success'}))
-                  .catch(this.fire.bind(this, 'toast', {message: 'Error updating fees.', type: 'danger'}))
-                  .finally(function(){
-                      this.refreshing = false;
-                  });
-          },
-
       });
   </script>
 </dom-module>
